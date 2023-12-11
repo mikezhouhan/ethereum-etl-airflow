@@ -30,7 +30,7 @@ def parse(
 
     # Refer to this issue for more detail https://github.com/blockchain-etl/ethereum-etl-airflow/issues/80.
 
-    internal_project_id = destination_project_id + '-internal'
+    internal_project_id = f'{destination_project_id}-internal'
     dataset_name = 'ethereum_' + table_definition['table']['dataset_name']
 
     create_or_replace_internal_view(
@@ -47,12 +47,12 @@ def parse(
 
     dataset = create_dataset(bigquery_client, dataset_name, internal_project_id)
     table_name = table_definition['table']['table_name']
-    history_table_name = table_name + '_history'
+    history_table_name = f'{table_name}_history'
     if parse_all_partitions is None:
         history_table_ref = dataset.table(history_table_name)
         history_table_exists = does_table_exist(bigquery_client, history_table_ref)
         parse_all_partitions = not history_table_exists
-        logging.info('parse_all_partitions is set to {}'.format(str(parse_all_partitions)))
+        logging.info(f'parse_all_partitions is set to {parse_all_partitions}')
 
     create_or_update_history_table(
         bigquery_client=bigquery_client,
@@ -95,7 +95,7 @@ def create_or_replace_internal_view(
 
     parser_type = table_definition['parser'].get('type', 'log')
 
-    udf_name = 'parse_{}'.format(table_name)
+    udf_name = f'parse_{table_name}'
 
     dataset = create_dataset(bigquery_client, dataset_name, internal_project_id)
 
@@ -180,13 +180,13 @@ def create_or_update_history_table(
     table_description = table_definition['table']['table_description']
     temp_table.description = table_description
     temp_table.time_partitioning = bigquery.TimePartitioning(field='block_timestamp')
-    logging.info('Creating table: ' + json.dumps(temp_table.to_api_repr()))
+    logging.info(f'Creating table: {json.dumps(temp_table.to_api_repr())}')
     temp_table = bigquery_client.create_table(temp_table)
     assert temp_table.table_id == temp_table_name
 
     # # # Query to temporary table
 
-    udf_name = 'parse_{}'.format(table_name)
+    udf_name = f'parse_{table_name}'
 
     selector = abi_to_selector(parser_type, table_definition['parser']['abi'])
 
@@ -261,7 +261,7 @@ def create_or_replace_stitch_view(
         sqls_folder
 ):
     table_name = table_definition['table']['table_name']
-    history_table_name = table_name + '_history'
+    history_table_name = f'{table_name}_history'
 
     # # # Create view
 
@@ -274,7 +274,7 @@ def create_or_replace_stitch_view(
         ds=ds
     )
 
-    print('Stitch view: ' + sql)
+    print(f'Stitch view: {sql}')
 
     dataset = create_dataset(bigquery_client, dataset_name, destination_project_id)
     dest_view_ref = dataset.table(table_name)
@@ -370,7 +370,7 @@ def generate_parse_sql_template(
             contract_address, ref_regex, destination_project_id, dataset_name
         )
 
-    sql = render_parse_sql_template(
+    return render_parse_sql_template(
         sqls_folder,
         parser_type,
         parse_mode=parse_mode,
@@ -382,9 +382,8 @@ def generate_parse_sql_template(
         table=table_definition['table'],
         selector=selector,
         parse_all_partitions=parse_all_partitions,
-        ds=ds
+        ds=ds,
     )
-    return sql
 
 
 def create_struct_string_from_schema(schema):
@@ -419,7 +418,7 @@ def create_dataset(client, dataset_name, project=None):
     try:
         logging.info('Creating new dataset ...')
         dataset = client.create_dataset(dataset)
-        logging.info('New dataset created: ' + dataset_name)
+        logging.info(f'New dataset created: {dataset_name}')
     except Conflict as error:
         logging.info('Dataset already exists')
 
@@ -484,9 +483,9 @@ def read_bigquery_schema_from_dict(schema, parser_type):
 
 def abi_to_selector(parser_type, abi):
     if parser_type == 'log':
-        return '0x' + event_abi_to_log_topic(abi).hex()
+        return f'0x{event_abi_to_log_topic(abi).hex()}'
     else:
-        return '0x' + function_abi_to_4byte_selector(abi).hex()
+        return f'0x{function_abi_to_4byte_selector(abi).hex()}'
 
 
 class HistoryType:

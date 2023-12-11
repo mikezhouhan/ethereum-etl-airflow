@@ -11,9 +11,7 @@ def render_parse_udf_template(
         **kwargs
 ):
     template = get_parse_udf_template(parser_type, sqls_folder)
-    rendered_template = render_template(template, kwargs)
-
-    return rendered_template
+    return render_template(template, kwargs)
 
 
 def render_parse_sql_template(
@@ -22,9 +20,7 @@ def render_parse_sql_template(
         **kwargs
 ):
     template = get_parse_sql_template(parser_type, sqls_folder)
-    rendered_template = render_template(template, kwargs)
-
-    return rendered_template
+    return render_template(template, kwargs)
 
 
 def render_merge_template(
@@ -33,9 +29,7 @@ def render_merge_template(
 ):
     template = get_merge_table_sql_template(sqls_folder)
 
-    rendered_template = render_template(template, kwargs)
-
-    return rendered_template
+    return render_template(template, kwargs)
 
 
 def render_stitch_view_template(
@@ -43,9 +37,7 @@ def render_stitch_view_template(
         **kwargs
 ):
     template = get_stitch_view_template(sqls_folder)
-    rendered_template = render_template(template, kwargs)
-
-    return rendered_template
+    return render_template(template, kwargs)
 
 
 def get_parse_udf_template(parser_type, sqls_folder):
@@ -57,32 +49,24 @@ def get_parse_udf_template(parser_type, sqls_folder):
     filepath = os.path.join(sqls_folder, filename)
 
     with open(filepath) as file_handle:
-        content = file_handle.read()
-        return content
+        return file_handle.read()
 
 
 def get_parse_sql_template(parser_type, sqls_folder):
-    if parser_type == 'log':
-        filename = 'parse_logs.sql'
-    else:
-        filename = 'parse_traces.sql'
-
+    filename = 'parse_logs.sql' if parser_type == 'log' else 'parse_traces.sql'
     filepath = os.path.join(sqls_folder, filename)
 
     with open(filepath) as file_handle:
-        content = file_handle.read()
-        return content
+        return file_handle.read()
 
 
 def get_merge_table_sql_template(sqls_folder):
     filepath = os.path.join(sqls_folder, 'merge_table.sql')
     with open(filepath) as file_handle:
-        content = file_handle.read()
-        return content
+        return file_handle.read()
 
 
 def get_stitch_view_template(sqls_folder):
     filepath = os.path.join(sqls_folder, 'stitch_view.sql')
     with open(filepath) as file_handle:
-        content = file_handle.read()
-        return content
+        return file_handle.read()

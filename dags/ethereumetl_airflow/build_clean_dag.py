@@ -103,9 +103,8 @@ CLEAN_TRACES_SQL_STATEMENT_TEMPLATE = 'DELETE FROM `blockchain-etl-internal.cryp
 def generate_clean_partitioned_logs_script(ds, start_index, end_index, sql_statement_template):
     hex_chars = '0123456789abcdef'
 
-    lines = []
+    lines = [sql_statement_template.format(table_suffix='empty', ds=ds)]
 
-    lines.append(sql_statement_template.format(table_suffix='empty', ds=ds))
     for hex_char1 in hex_chars:
         for hex_char2 in hex_chars:
             for hex_char3 in hex_chars:

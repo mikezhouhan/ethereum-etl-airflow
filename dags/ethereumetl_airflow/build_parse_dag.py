@@ -37,7 +37,7 @@ def build_parse_dag(
     logging.info('parse_all_partitions is {}'.format(parse_all_partitions))
 
     if parse_all_partitions:
-        dag_id = dag_id + '_FULL'
+        dag_id = f'{dag_id}_FULL'
 
     if 'ethereum_kovan_parse' in dag_id:
         SOURCE_PROJECT_ID = 'public-data-finance'
@@ -204,7 +204,7 @@ def build_parse_dag(
     final_tasks = [checkpoint_task]
 
     dataset_name = os.path.basename(dataset_folder)
-    full_dataset_name = 'ethereum_' + dataset_name
+    full_dataset_name = f'ethereum_{dataset_name}'
 
     share_dataset_task = create_share_dataset_task(full_dataset_name)
     checkpoint_task >> share_dataset_task
@@ -240,7 +240,7 @@ def get_list_of_files(dataset_folder, filter='*.json'):
     logging.info('get_list_of_files')
     logging.info(dataset_folder)
     logging.info(os.path.join(dataset_folder, filter))
-    return [f for f in glob(os.path.join(dataset_folder, filter))]
+    return list(glob(os.path.join(dataset_folder, filter)))
 
 
 def validate_definition_files(dataset_folder):
@@ -273,7 +273,7 @@ def validate_definition_files(dataset_folder):
     for table_name in all_lowercase_table_names:
         table_name_counts[table_name] += 1
 
-    non_unique_table_names = [name for name, count in table_name_counts.items() if count > 1]
-
-    if len(non_unique_table_names) > 0:
+    if non_unique_table_names := [
+        name for name, count in table_name_counts.items() if count > 1
+    ]:
         raise ValueError(f'The following table names are not unique {",".join(non_unique_table_names)}')

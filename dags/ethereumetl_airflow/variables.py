@@ -6,7 +6,7 @@ from airflow.models import Variable
 def read_export_dag_vars(var_prefix, **kwargs):
     export_start_date = read_var('export_start_date', var_prefix, True, **kwargs)
     export_start_date = datetime.strptime(export_start_date, '%Y-%m-%d')
-    
+
     provider_uris = read_var('provider_uris', var_prefix, True, **kwargs)
     provider_uris = [uri.strip() for uri in provider_uris.split(',')]
 
@@ -20,38 +20,69 @@ def read_export_dag_vars(var_prefix, **kwargs):
     if cloud_provider is None:
         cloud_provider = 'gcp'
 
-    vars = {
+    return {
         'output_bucket': read_var('output_bucket', var_prefix, True, **kwargs),
         'cloud_provider': cloud_provider,
         'export_start_date': export_start_date,
-        'export_schedule_interval': read_var('export_schedule_interval', var_prefix, True, **kwargs),
+        'export_schedule_interval': read_var(
+            'export_schedule_interval', var_prefix, True, **kwargs
+        ),
         'provider_uris': provider_uris,
         'provider_uris_archival': provider_uris_archival,
-        'notification_emails': read_var('notification_emails', None, False, **kwargs),
-        'export_max_active_runs': parse_int(read_var('export_max_active_runs', var_prefix, False, **kwargs)),
-        'export_max_workers': parse_int(read_var('export_max_workers', var_prefix, True, **kwargs)),
-        'export_batch_size': parse_int(read_var('export_batch_size', var_prefix, True, **kwargs)),
-        'export_retries': parse_int(read_var('export_retries', var_prefix, True, **kwargs)),
+        'notification_emails': read_var(
+            'notification_emails', None, False, **kwargs
+        ),
+        'export_max_active_runs': parse_int(
+            read_var('export_max_active_runs', var_prefix, False, **kwargs)
+        ),
+        'export_max_workers': parse_int(
+            read_var('export_max_workers', var_prefix, True, **kwargs)
+        ),
+        'export_batch_size': parse_int(
+            read_var('export_batch_size', var_prefix, True, **kwargs)
+        ),
+        'export_retries': parse_int(
+            read_var('export_retries', var_prefix, True, **kwargs)
+        ),
         # toggles
         'export_daofork_traces_option': parse_bool(
-            read_var('export_daofork_traces_option', var_prefix, False, **kwargs)),
+            read_var(
+                'export_daofork_traces_option', var_prefix, False, **kwargs
+            )
+        ),
         'export_genesis_traces_option': parse_bool(
-            read_var('export_genesis_traces_option', var_prefix, False, **kwargs)),
+            read_var(
+                'export_genesis_traces_option', var_prefix, False, **kwargs
+            )
+        ),
         'export_blocks_and_transactions_toggle': parse_bool(
-            read_var('export_blocks_and_transactions_toggle', var_prefix, False, **kwargs)),
+            read_var(
+                'export_blocks_and_transactions_toggle',
+                var_prefix,
+                False,
+                **kwargs
+            )
+        ),
         'export_receipts_and_logs_toggle': parse_bool(
-            read_var('export_receipts_and_logs_toggle', var_prefix, False, **kwargs)),
+            read_var(
+                'export_receipts_and_logs_toggle', var_prefix, False, **kwargs
+            )
+        ),
         'extract_contracts_toggle': parse_bool(
-            read_var('extract_contracts_toggle', var_prefix, False, **kwargs)),
+            read_var('extract_contracts_toggle', var_prefix, False, **kwargs)
+        ),
         'extract_tokens_toggle': parse_bool(
-            read_var('extract_tokens_toggle', var_prefix, False, **kwargs)),
+            read_var('extract_tokens_toggle', var_prefix, False, **kwargs)
+        ),
         'extract_token_transfers_toggle': parse_bool(
-            read_var('extract_token_transfers_toggle', var_prefix, False, **kwargs)),
+            read_var(
+                'extract_token_transfers_toggle', var_prefix, False, **kwargs
+            )
+        ),
         'export_traces_toggle': parse_bool(
-            read_var('export_traces_toggle', var_prefix, False, **kwargs)),
+            read_var('export_traces_toggle', var_prefix, False, **kwargs)
+        ),
     }
-
-    return vars
 
 
 def read_load_dag_vars(var_prefix, **kwargs):
@@ -72,13 +103,17 @@ def read_load_dag_vars(var_prefix, **kwargs):
 
 
 def read_amend_dag_vars(var_prefix, **kwargs):
-    vars = {
-        'destination_dataset_project_id': read_var('destination_dataset_project_id', var_prefix, True, **kwargs),
-        'notification_emails': read_var('notification_emails', None, False, **kwargs),
-        'schedule_interval': read_var('schedule_interval', var_prefix, True, **kwargs),
+    return {
+        'destination_dataset_project_id': read_var(
+            'destination_dataset_project_id', var_prefix, True, **kwargs
+        ),
+        'notification_emails': read_var(
+            'notification_emails', None, False, **kwargs
+        ),
+        'schedule_interval': read_var(
+            'schedule_interval', var_prefix, True, **kwargs
+        ),
     }
-
-    return vars
 
 def read_parse_dag_vars(var_prefix, dataset, **kwargs):
     per_dataset_var_prefix = var_prefix + dataset + '_'
@@ -150,6 +185,4 @@ def parse_bool(bool_string, default=True):
 
 
 def parse_int(val):
-    if val is None:
-        return None
-    return int(val)
+    return None if val is None else int(val)

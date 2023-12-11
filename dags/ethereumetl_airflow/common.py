@@ -9,5 +9,4 @@ def read_json_file(filepath):
 
 def read_file(filepath):
     with open(filepath) as file_handle:
-        content = file_handle.read()
-        return content
+        return file_handle.read()
