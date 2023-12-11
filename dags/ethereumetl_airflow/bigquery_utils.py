@@ -9,7 +9,7 @@ from ethereumetl_airflow.common import read_file
 
 def submit_bigquery_job(job, configuration):
     try:
-        logging.info('Creating a job: ' + json.dumps(configuration.to_api_repr()))
+        logging.info(f'Creating a job: {json.dumps(configuration.to_api_repr())}')
         result = job.result()
         logging.info(result)
         assert job.errors is None or len(job.errors) == 0
@@ -56,7 +56,7 @@ def query(bigquery_client, sql, destination=None, priority=bigquery.QueryPriorit
     job_config = bigquery.QueryJobConfig()
     job_config.destination = destination
     job_config.priority = priority
-    logging.info('Executing query: ' + sql)
+    logging.info(f'Executing query: {sql}')
     query_job = bigquery_client.query(sql, location='US', job_config=job_config)
     submit_bigquery_job(query_job, job_config)
     assert query_job.state == 'DONE'
@@ -68,7 +68,7 @@ def create_view(bigquery_client, sql, table_ref, description=None):
     if description is not None:
         table.description = description
 
-    logging.info('Creating view: ' + json.dumps(table.to_api_repr()))
+    logging.info(f'Creating view: {json.dumps(table.to_api_repr())}')
 
     try:
         table = bigquery_client.create_table(table)
@@ -95,11 +95,12 @@ def share_dataset_all_users_read(bigquery_client, full_dataset_name):
 
     dataset = bigquery_client.get_dataset(full_dataset_name)
     entries = list(dataset.access_entries)
-    is_shared = False
-    for entry in entries:
-        if entry.role == role and entry.entity_type == entity_type and entry.entity_id == entity_id:
-            is_shared = True
-
+    is_shared = any(
+        entry.role == role
+        and entry.entity_type == entity_type
+        and entry.entity_id == entity_id
+        for entry in entries
+    )
     if not is_shared:
         entry = bigquery.AccessEntry(
             role=role,

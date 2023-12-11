@@ -42,9 +42,9 @@ def validate_json(filename):
 def get_json_files_in_dir(dir):
     all_json_files = []
     for root, dirs, files in os.walk(dir):
-        for name in files:
-            if name.endswith((".json")):
-                all_json_files.append((root + '/' + name)[2:])
+        all_json_files.extend(
+            f'{root}/{name}'[2:] for name in files if name.endswith((".json"))
+        )
     return all_json_files
 
 

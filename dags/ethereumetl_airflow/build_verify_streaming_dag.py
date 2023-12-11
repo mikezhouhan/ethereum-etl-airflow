@@ -27,7 +27,7 @@ def build_verify_streaming_dag(
     environment = {
         'dataset_name': dataset_name,
         'destination_dataset_project_id': destination_dataset_project_id,
-        'internal_project_id': parse_destination_dataset_project_id + '-internal',
+        'internal_project_id': f'{parse_destination_dataset_project_id}-internal',
         'partitioned_dataset_name': partitioned_dataset_name,
         'max_lag_in_minutes': max_lag_in_minutes,
     }
@@ -90,5 +90,4 @@ def build_verify_streaming_dag(
 
 def read_file(filepath):
     with open(filepath) as file_handle:
-        content = file_handle.read()
-        return content
+        return file_handle.read()

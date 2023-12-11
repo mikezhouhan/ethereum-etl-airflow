@@ -54,7 +54,7 @@ def table_definition_file_to_expected_file(table_definition_file, parse_all_part
 
 
 def read_resource(filename):
-    full_filepath = 'tests/resources/ethereumetl_airflow/test_parse/' + filename
+    full_filepath = f'tests/resources/ethereumetl_airflow/test_parse/{filename}'
     return open(full_filepath).read()
 
 

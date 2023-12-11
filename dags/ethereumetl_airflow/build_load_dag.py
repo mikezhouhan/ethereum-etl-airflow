@@ -165,7 +165,7 @@ def build_load_dag(
             table.description = read_file(description_path)
             if time_partitioning_field is not None:
                 table.time_partitioning = TimePartitioning(field=time_partitioning_field)
-            logging.info('Creating table: ' + json.dumps(table.to_api_repr()))
+            logging.info(f'Creating table: {json.dumps(table.to_api_repr())}')
             table = client.create_table(table)
             assert table.table_id == temp_table_name
 
@@ -367,7 +367,7 @@ def adjust_schema_for_kovan(dag_id, task, schema):
                     description=field.description,
                     fields=field.fields
                 ))
-            elif field.name == 'difficulty' or field.name == 'total_difficulty':
+            elif field.name in ['difficulty', 'total_difficulty']:
                 result.append(SchemaField(
                     name=field.name,
                     field_type='FLOAT64',
